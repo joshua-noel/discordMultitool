@@ -1,42 +1,52 @@
 #!/usr/bin/env python
 import pytube
 from pytube import YouTube
+from rich.console import Console
+from rich.progress import Progress
 import os
+
+console = Console()
 
 class Downloader:
     def __init__(self):
         pass
 
+    def progress(self, stream, chunk, bytes_remaining):
+        with Progress(refresh_per_second= 0.2, transient= True) as progress:
+            downloadTask = progress.add_task("[green]Downloading...", total= (stream.filesize * 100))
+
+            while not progress.finished:
+                progress.update(downloadTask, advance= (100 - round(bytes_remaining / stream.filesize * 100)))
+
     def download(self, url):
         #exception handling
         try:
-            yt = YouTube(str(url))
+            yt = YouTube(str(url), on_progress_callback= self.progress)
 
         except pytube.exceptions.RegexMatchError:
-            print("Invalid URL")
+            console.print("Invalid URL")
             return 0
 
         except pytube.exceptions.VideoUnavailable:
-            print("Video unavailable")
+            console.print("Video unavailable")
             return 0
 
         except pytube.exceptions.ExtractError:
-            print("Error extracting video")
+            console.print("Error extracting video")
             return 0
         
         except pytube.exceptions.HTMLParseError:
-            print("Error parsing HTML")
+            console.print("Error parsing HTML")
             return 0
 
         except pytube.exceptions.LiveStreamError(url):
-            print("Live stream")
+            console.print("Live stream")
             return 0
 
         except pytube.exceptions.MaxRetriesExceeded:
-            print("Max retries exceeded")
+            console.print("Max retries exceeded")
             return 0
         
-        else:    
-            print("Dowmlading {}".format(yt.title))    
+        else:     
             stream = yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution()
             stream.download(os.getcwd() + "/videos/", filename= "video.mp4")
