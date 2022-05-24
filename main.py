@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix= config["prefix"], intents=intents)
 console = Console() #rich console object
 
 #Events
-#Bot statuses
+#Bot Events
 @bot.event
 async def on_connect():
     console.log("[green]Connected to discord's servers[/Green]")
@@ -69,12 +69,18 @@ async def commands(ctx):
 @bot.command(name= "download")
 async def download(ctx, url):
     await ctx.message.delete(delay= None) #deletes command message
+    await ctx.send("Attempting to download your video", delete_after= 5) #limits channel spam
 
     if YT.Downloader().download(url) == 0: #downloads video
         await ctx.send("Could not download video {0}".format(ctx.message.author.mention))
         
     else:
-        await ctx.send("Downloading your video")
-        await ctx.send("Downloaded {0}".format(ctx.message.author.mention), file= discord.File("videos/video.mp4")) #sends video to channel
+        #upload size limit exception handling
+        try:
+            await ctx.send("Downloaded {0}".format(ctx.message.author.mention), file= discord.File("videos/video.mp4")) #sends video to channel
+
+        except discord.errors.HTTPException:
+            await ctx.send("Could not send video {0}".format(ctx.message.author.mention))
+            console.print("[red]Could not send video {0}[/red]".format(ctx.message.author.mention))
 
 bot.run(config['token'])
