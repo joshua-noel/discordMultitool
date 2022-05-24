@@ -1,9 +1,9 @@
+import sys
+sys.dont_write_bytecode = True #Prevents creation of .pyc files
 import discord
 from discord.ext import commands
 from rich.console import Console
-import sys
 
-sys.dont_write_bytecode = True #Prevents creation of .pyc files
 console = Console() #Rich console
 
 class Connection(commands.Cog):
@@ -30,4 +30,4 @@ class Connection(commands.Cog):
 #Cog setup
 def setup(bot):
     bot.add_cog(Connection(bot))
-    console.log("[green]Connection Cog loaded[/green]")
+    console.log("[green]Connection Cog loaded...[/green]")
