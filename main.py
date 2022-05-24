@@ -45,6 +45,7 @@ async def download(ctx, url):
         await ctx.send("Could not download video {0}".format(ctx.message.author.mention))
         
     else:
+        await ctx.send("Downloading your video")
         await ctx.send("Downloaded {0}".format(ctx.message.author.mention), file= discord.File("videos/video.mp4")) #sends video to channel
 
 bot.run(config['token'])
