@@ -21,8 +21,8 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
 
-@bot.command
-async def reload(ctx, extension):    
+@bot.command(name= "reload")
+async def _reload(ctx, extension):    
     bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
 
