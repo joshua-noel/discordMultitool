@@ -1,4 +1,4 @@
 /videos
 /__pycache__
 config.json
-bot.bat #launch bot on windows
+bot.bat
