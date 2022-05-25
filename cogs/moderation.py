@@ -12,7 +12,7 @@ class Moderation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
-        console.print("[red]{0.name} has been banned[/red]".format(member))
+        console.log("[red]{0.name} has been banned[/red]".format(member))
         
         #exception handling
         try:
@@ -23,7 +23,7 @@ class Moderation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):
-        console.print("[green]{0.name} has been unbanned[/green]".format(member))
+        console.log("[green]{0.name} has been unbanned[/green]".format(member))
         
         #exception handling
         try:

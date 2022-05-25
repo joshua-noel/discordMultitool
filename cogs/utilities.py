@@ -32,7 +32,7 @@ class Utilities(commands.Cog):
 
             except discord.errors.HTTPException:
                 await ctx.send("Could not send video {0.mention}".format(ctx.message.author.mention))
-                console.print("[red]Could not send video {0.mention}[/red]".format(ctx.message.author.mention))
+                console.log("[red]Could not send video {0.mention}[/red]".format(ctx.message.author.mention))
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
