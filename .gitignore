@@ -1,4 +1,4 @@
 /videos
 /__pycache__
-config.json
+.env
 bot.bat
