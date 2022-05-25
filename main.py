@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 import discord
 from discord.ext import commands
-import json
+from dotenv import load_dotenv
 import os
 
 #Setup
-#loads config
-with open("config.json", "r") as f:
-    config = json.load(f)
+load_dotenv() #Loads the .env file
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix= config["prefix"], intents=intents)
+bot = commands.Bot(command_prefix= "&", intents=intents)
 
 #Cog loading/Unloading
 @bot.command
@@ -38,4 +36,4 @@ for file in os.listdir('./cogs'):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
         
-bot.run(config['token'])
+bot.run(os.getenv('BOT_TOKEN'))
