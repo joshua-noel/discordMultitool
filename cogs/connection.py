@@ -16,7 +16,7 @@ class Connection(commands.Cog):
 
     @commands.Cog.listener()
     async def on_disconnect(self):
-        console.log("[red]Disconnected from discord's servers[/Red]")
+        console.log("[yellow]Disconnected from discord's servers[/yellow]")
 
     @commands.Cog.listener()
     async def on_resumed(self):
@@ -30,4 +30,4 @@ class Connection(commands.Cog):
 #Cog setup
 def setup(bot):
     bot.add_cog(Connection(bot))
-    console.log("[green]Connection Cog loaded...[/green]")
+    console.log("[bright_cyan]Connection Cog loaded...[/bright_cyan]")

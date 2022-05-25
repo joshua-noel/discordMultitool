@@ -36,4 +36,4 @@ class Members(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Members(bot))
-    console.log("[green]Members Cog loaded...[/green]")
+    console.log("[bright_cyan]Members Cog loaded...[/bright_cyan]")

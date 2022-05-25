@@ -35,4 +35,4 @@ class Moderation(commands.Cog):
 #Cog setup
 def setup(bot):
     bot.add_cog(Moderation(bot))
-    console.log("[green]Moderation Cog loaded...[/green]")
+    console.log("[bright_cyan]Moderation Cog loaded...[/bright_cyan]")
