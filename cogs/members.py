@@ -12,7 +12,7 @@ class Members(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        channel = member.guild.system_channel
+        channel = member.guild.get_channel(978429063557431306)
         console.print("[green]{0.name} has joined the server[/green]".format(member))
         if channel is not None:
             await channel.send("Welcome to the server {0.mention}".format(member))
@@ -22,10 +22,10 @@ class Members(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        channel = member.guild.system_channel
+        channel = member.guild.get_channel(978429063557431306)
         console.print("[red]{0.name} has left the server[/red]".format(member))
         if channel is not None:
-            await channel.send("{0.name} has left the server".format(member))
+            await channel.send("@{0.name} has left the server".format(member))
             
         await member.send("Goodbye {0.mention}! Hope to see you again!".format(member))
 
