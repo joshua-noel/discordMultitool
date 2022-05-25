@@ -13,12 +13,24 @@ class Moderation(commands.Cog):
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
         console.print("[red]{0.name} has been banned[/red]".format(member))
-        await member.send("You have been banned from the server!")
+        
+        #exception handling
+        try:
+            await member.send("You have been banned from the server!")
+
+        except discord.errors.Forbidden: #if user has DMs disabled
+            pass
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):
         console.print("[green]{0.name} has been unbanned[/green]".format(member))
-        await member.send("You have been unbanned from the server!")
+        
+        #exception handling
+        try:
+            await member.send("You have been unbanned from the server!")
+
+        except discord.errors.Forbidden: #if user has DMs disabled
+            pass
 
 #Cog setup
 def setup(bot):

@@ -26,8 +26,13 @@ class Members(commands.Cog):
         console.print("[red]{0.name} has left the server[/red]".format(member))
         if channel is not None:
             await channel.send("@{0.name} has left the server".format(member))
-            
-        await member.send("Goodbye {0.mention}! Hope to see you again!".format(member))
+
+        #exception handling
+        try:   
+            await member.send("Goodbye {0.mention}! Hope to see you again!".format(member))
+
+        except discord.errors.Forbidden: #if user has DMs disabled
+            pass
 
 def setup(bot):
     bot.add_cog(Members(bot))
