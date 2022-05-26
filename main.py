@@ -24,7 +24,7 @@ async def _reload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
 
-@bot.command(name= "reloadAll")
+@bot.command
 async def reloadAll(ctx):
     for file in os.listdir('./cogs'):
         if file.endswith('.py'):
@@ -36,4 +36,4 @@ for file in os.listdir('./cogs'):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
         
-bot.run(os.getenv('BOT_TOKEN'))
+bot.run(os.getenv('BOT_TOKEN')) #runs bot
