@@ -50,4 +50,4 @@ class Downloader:
         else:     
             stream = yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution()
             stream.download(os.getcwd() + "/videos/", filename= "video.mp4")
-            console.print("[green]Downloaded a video[/green]")
+            console.log("[green]Downloaded a video[/green]")
