@@ -24,7 +24,7 @@ class Connection(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        console.log("[green]Logged in as {0}[/green]".format(self.bot))
+        console.log("[green]Logged in as {0.user}[/green]".format(self.bot))
         await self.bot.change_presence(activity= discord.Game(name= "&commands")) #sets bot's status
 
 #Cog setup
