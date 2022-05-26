@@ -13,23 +13,23 @@ class Members(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         channel = member.guild.get_channel(978429063557431306)
-        console.log("[green]{0.name} has joined the server[/green]".format(member))
+        console.log("[green]{0} has joined the server[/green]".format(member))
         if channel is not None:
-            await channel.send("Welcome to the server {0.mention}".format(member))
+            await channel.send("Welcome to the server {0}".format(member))
 
-        await member.send("Welcome {0.mention} to the server!".format(member))
+        await member.send("Welcome {0} to the server!".format(member))
         await member.send("Type '&commands' to see a list of commands!")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         channel = member.guild.get_channel(978429063557431306)
-        console.log("[red]{0.name} has left the server[/red]".format(member))
+        console.log("[red]{0} has left the server[/red]".format(member))
         if channel is not None:
-            await channel.send("@{0.name} has left the server".format(member))
+            await channel.send("@{0} has left the server".format(member))
 
         #exception handling
         try:   
-            await member.send("Goodbye {0.mention}! Hope to see you again!".format(member))
+            await member.send("Goodbye {0}! Hope to see you again!".format(member))
 
         except discord.errors.Forbidden: #if user has DMs disabled
             pass
