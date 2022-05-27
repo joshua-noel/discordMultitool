@@ -23,31 +23,10 @@ class Downloader:
         try:
             yt = YouTube(str(url), on_progress_callback= self.progress)
 
-        except pytube.exceptions.RegexMatchError:
-            console.print("[red]Invalid URL[/red]")
-            return 0
-
-        except pytube.exceptions.VideoUnavailable:
-            console.print("[red]Video unavailable[/red]")
-            return 0
-
-        except pytube.exceptions.ExtractError:
-            console.print("[red]Error extracting video[/red]")
-            return 0
-        
-        except pytube.exceptions.HTMLParseError:
-            console.print("[red]Error parsing HTML[/red]")
-            return 0
-
-        except pytube.exceptions.LiveStreamError(url):
-            console.print("[red]Live stream[/red]")
-            return 0
-
-        except pytube.exceptions.MaxRetriesExceeded:
-            console.print("[red]Max retries exceeded[/red]")
-            return 0
+        except Exception:
+            pass
         
         else:     
             stream = yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution()
             stream.download(os.getcwd() + "/videos/", filename= "video.mp4")
-            console.log("[purple]Downloaded a video[/purple]")
+            console.log("Downloaded a video")
