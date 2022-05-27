@@ -1,5 +1,6 @@
 /videos
 /__pycache__
 /cogs/copypastas.py
+database.db
 .env
 bot.bat
