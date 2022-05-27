@@ -13,15 +13,15 @@ class Connection(commands.Cog):
 
     @commands.Cog.listener()
     async def on_connect(self):
-        console.log("[green]Connected to discord's servers[/Green]")
+        console.log("[green]Connected to discord's servers[/green]")
 
     @commands.Cog.listener()
     async def on_disconnect(self):
-        console.log("[bright_magenta]Disconnected from discord's servers[/bright_magenta]")
+        console.log("[yellow]Disconnected from discord's servers[/yellow]")
 
     @commands.Cog.listener()
     async def on_resumed(self):
-        console.log("[green]Resumed connection to discord's servers[/Green]")
+        console.log("[green]Resumed connection to discord's servers[/green]")
 
     @commands.Cog.listener()
     async def on_ready(self):
