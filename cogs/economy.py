@@ -35,9 +35,13 @@ class Economy(commands.Cog):
                 account = await cursor.fetchone()
 
                 if account is None:
-                    await cursor.execute("INSERT INTO economy (user_id, balance) VALUES (?, ?)", (ctx.author.id, 500))
+                    await cursor.execute("INSERT INTO economy (user_id, balance, server_id) VALUES (?, ?, ?)", (ctx.author.id, 500, ctx.guild.id))
                     await ctx.send("Account created for {0.mention}!".format(ctx.author))
                     console.log("Account created for {0}!".format(ctx.author))
+
+                else:
+                    await ctx.send("You already have an account!")
+                    console.log("{0} already has an account!".format(ctx.author))
                 
             await db.commit()
 
