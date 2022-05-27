@@ -30,7 +30,7 @@ class Connection(commands.Cog):
 
         #establish database connection
         async with aiosqlite.connect('database.db') as db:
-            console.log("[blue]Initial database connection established...[/blue]")
+            console.log("[blue]Initial database connection established[/blue]")
             #database creation
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS economy (user_id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 500)")
