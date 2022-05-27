@@ -1,2 +1,17 @@
-&repeat <message>
+#General Commands#
+&commands
 &download <url>
+&createacc 
+&deleteacc
+&pay <user> <amt>
+&coinflip <bet> <guess>
+&dice
+
+#Admin Commands#
+&load <cog>
+&unload <cog>
+&reload <cog>
+&unloadall
+&ban <user>
+&unban <user>
+&kick <user>
