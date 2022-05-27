@@ -2,6 +2,7 @@ import sys
 sys.dont_write_bytecode = True #Prevents creation of .pyc files
 import discord
 from discord.ext import commands
+import aiosqlite
 from rich.console import Console
 
 console = Console() #Rich console
@@ -16,7 +17,7 @@ class Connection(commands.Cog):
 
     @commands.Cog.listener()
     async def on_disconnect(self):
-        console.log("[orange]Disconnected from discord's servers[/orange]")
+        console.log("[bright_magenta]Disconnected from discord's servers[/bright_magenta]")
 
     @commands.Cog.listener()
     async def on_resumed(self):
@@ -26,6 +27,15 @@ class Connection(commands.Cog):
     async def on_ready(self):
         console.log("[green]Logged in as {0.user}[/green]".format(self.bot))
         await self.bot.change_presence(activity= discord.Game(name= "&commands")) #sets bot's status
+
+        #establish database connection
+        async with aiosqlite.connect('database.db') as db:
+            console.log("[blue]Initial database connection established...[/blue]")
+            #database creation
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS economy (user_id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 500)")
+            
+            await db.commit() #commit changes
 
 #Cog setup
 def setup(bot):
