@@ -37,6 +37,7 @@ class Economy(commands.Cog):
                 if account is None:
                     await cursor.execute("INSERT INTO economy (user_id, balance) VALUES (?, ?)", (ctx.author.id, 500))
                     await ctx.send("Account created for {0.mention}!".format(ctx.author))
+                    console.log("Account created for {0}!".format(ctx.author))
                 
             await db.commit()
 
@@ -50,6 +51,7 @@ class Economy(commands.Cog):
                 if account is not None:
                     await cursor.execute("DELETE FROM economy WHERE user_id = ?", (ctx.author.id,))
                     await ctx.send("Account deleted for {0.mention}!".format(ctx.author))
+                    console.log("Account deleted for {0}!".format(ctx.author))
 
             await db.commit()
 
