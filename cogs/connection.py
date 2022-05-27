@@ -16,7 +16,7 @@ class Connection(commands.Cog):
 
     @commands.Cog.listener()
     async def on_disconnect(self):
-        console.log("[yellow]Disconnected from discord's servers[/yellow]")
+        console.log("[orange]Disconnected from discord's servers[/orange]")
 
     @commands.Cog.listener()
     async def on_resumed(self):
