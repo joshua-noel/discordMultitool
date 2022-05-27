@@ -13,9 +13,14 @@ class Utilities(commands.Cog):
 
     @commands.command(name= "commands")
     async def _commands(self, ctx):
+        embed = discord.Embed(title= "Commands", color= 0x00ff00)
         with open("commands.txt", "r") as f:
             commands = f.read().splitlines()
-            await ctx.send("```{0}```".format("\n".join(commands)))
+
+        for i in range(len(commands)):
+            embed.add_field(name= f"{i+1}. {commands[i]}", value= "-------------------------------", inline=False)
+
+        await ctx.send(embed=embed)
 
     @commands.command(name= "download")
     async def download(self, ctx, url):
