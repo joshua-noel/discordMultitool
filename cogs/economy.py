@@ -108,183 +108,160 @@ class Economy(commands.Cog):
 
             await db.commit()
 
-    @commands.command(name= "balance", aliases= ["bal"])
+    #Money handling
+    async def updateBalance(self, user, amount):
+        async with aiosqlite.connect('database.db') as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (user.id,))
+                balance = await cursor.fetchone()
+
+                if balance is not None:
+                    await cursor.execute("UPDATE economy SET balance = ? WHERE user_id = ?", (int(balance[0]) + int(amount), user.id))
+                    await db.commit()
+
     async def balance(self, ctx, member: discord.Member = None):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:
                 if member is None:
                     await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
                     balance = await cursor.fetchone()
-                    await ctx.send("{0.mention}'s balance is {1}".format(ctx.author, balance[0]))
 
                 else:
                     await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (member.id,))
                     balance = await cursor.fetchone()
-                    await ctx.send("{0.mention}'s balance is {1}".format(member, balance[0]))
 
             await db.commit()
+            return int(balance[0])
+
+    @commands.command(name= "balance", aliases= ["bal"])
+    async def _balance(self, ctx, member: discord.Member = None):
+        if member is None:
+            balance = await self.balance(ctx)
+            await ctx.send("{0.mention}'s balance is ${1}".format(ctx.author, balance))
+
+        else:
+            balance = await self.balance(ctx, member)
+            await ctx.send("{0.mention}'s balance is ${1}".format(member, balance))
 
     @commands.command(name= "pay", aliases= ["give"])
     async def pay(self, ctx, member: discord.Member, amount: int):
-        async with aiosqlite.connect('database.db') as db:
-            async with db.cursor() as cursor:
-                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                balance = await cursor.fetchone()
+        balance = await self.balance(ctx, ctx.author)
 
-                if balance[0] >= amount:
-                    await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (amount, ctx.author.id))
-                    await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (amount, member.id))
-                    await ctx.send("{0} paid {1} {2}".format(ctx.author, member, amount))
-
-                else:
-                    await ctx.send("You don't have enough money to pay {0.mention} {1}".format(member, amount))
-
-            await db.commit()
+        if balance >= amount:
+            await self.updateBalance(ctx.author, -amount)
+            await self.updateBalance(member, amount)
+            await ctx.send("{0} has paid {1} ${2}".format(ctx.author, member, amount))
 
     #Casino commands
     @commands.command(name= "coinflip", aliases= ["cf"])
     async def coinFlip(self, ctx, bet: int, guess: str):
-        async with aiosqlite.connect('database.db') as db:
-            async with db.cursor() as cursor:
-                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                balance = await cursor.fetchone()
+        balance = await self.balance(ctx, ctx.author)
 
-                if (balance[0] - bet) < 0:
-                    await ctx.send("You don't have enough money to play!")
+        if balance >= bet:
+            result = await Gambling.coinFlip(self)
+            
+            if guess.lower() == result:
+                await self.updateBalance(ctx.author, bet)
+                await ctx.send("{0.mention} won ${1}!".format(ctx.author, bet))
 
-                else:
-                    if guess.lower() == await Gambling.coinFlip(self):
-                        await ctx.send("{0.mention} guessed {1} and won {2}".format(ctx.author, guess, bet * 2))      
+            else:
+                await self.updateBalance(ctx.author, -bet)
+                await ctx.send("{0.mention} lost ${1}!".format(ctx.author, bet))
 
-                        await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                        balance = await cursor.fetchone()
-                        await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (bet, ctx.author.id))
-
-                    else:
-                        await ctx.send("{0.mention} guessed {1} and lost {2}".format(ctx.author, guess, bet))
-
-                        await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                        balance = await cursor.fetchone()
-                        await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))         
-
-            await db.commit()           
+        else:
+            await ctx.send("You don't have enough money!")         
 
     @commands.command(name= "dice")
     async def rollDice(self, ctx):
-        async with aiosqlite.connect('database.db') as db:
-            async with db.cursor() as cursor:
-                roll = await Gambling.rollDice(self)
+        roll = await Gambling.rollDice(self)
 
-                if roll == 7:
-                    await ctx.send("{0.mention} rolled {1} and won 100".format(ctx.author, roll))
+        if roll == 7:
+            await ctx.send("{0.mention} rolled {1} and won $100".format(ctx.author, roll))
+            await self.updateBalance(ctx.author, 100)
 
-                    await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                    balance = await cursor.fetchone()
-                    await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (100, ctx.author.id))
-
-                else:
-                    await ctx.send("You rolled a {0} you lose".format(roll))
-
-            await db.commit()
+        else:
+            await ctx.send("You rolled a {0} you lose".format(roll))
 
     @commands.command(name= "blackjack")
     async def blackJack(self, ctx, bet: int):
-        async with aiosqlite.connect('database.db') as db:
-            async with db.cursor() as cursor:
-                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                balance = await cursor.fetchone()
+        balance = await self.balance(ctx, ctx.author)
 
-                if (balance[0] - bet) < 0:
-                    await ctx.send("You don't have enough money to play!")
+        if balance < bet:
+            await ctx.send("You don't have enough money to play!")
 
-                else:
-                    player = await Gambling.Blackjack().deal()
-                    dealer = await Gambling.Blackjack().deal()
+        else:
+            player = await Gambling.Blackjack().deal()
+            dealer = await Gambling.Blackjack().deal()
 
-                    embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
-                    embed.add_field(name="Your Hand", value=player)
-                    msg = await ctx.send(embed=embed)
-                    await msg.add_reaction("✅")
-                    await msg.add_reaction("❌")
+            embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
+            embed.add_field(name="Your Hand", value=player)
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction("✅")
+            await msg.add_reaction("❌")
 
-                while True:
-                    try:
-                        #checks for reaction
-                        react = await self.bot.wait_for('reaction_add', timeout=1.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
+            while True:
+                try:
+                    #checks for reaction
+                    react = await self.bot.wait_for('reaction_add', timeout=20.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
 
-                        #hit
-                        if str(react[0].emoji) == "✅":
-                            await msg.clear_reactions()
-                            await msg.add_reaction("✅")
-                            await msg.add_reaction("❌")
+                    #hit
+                    if str(react[0].emoji) == "✅":
+                        await msg.clear_reactions()
+                        await msg.add_reaction("✅")
+                        await msg.add_reaction("❌")
 
-                            player += await Gambling.Blackjack().hit()
-                            updated_embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
-                            updated_embed.add_field(name="Your Hand", value=player)
-                            await msg.edit(embed=updated_embed)
+                        player += await Gambling.Blackjack().hit()
+                        updated_embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
+                        updated_embed.add_field(name="Your Hand", value=player)
+                        await msg.edit(embed=updated_embed)
 
-                            if player > 21:
-                                await msg.clear_reactions()
-                                updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
-                                updated_embed.add_field(name="Dealer", value=dealer)
-                                updated_embed.add_field(name="You", value=player)
-                                await msg.edit(embed=updated_embed)
-
-                                await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
-
-                                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                                balance = await cursor.fetchone()
-                                await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
-                                break
-                                
-                        else:
+                        if player > 21:
                             await msg.clear_reactions()
                             updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
                             updated_embed.add_field(name="Dealer", value=dealer)
                             updated_embed.add_field(name="You", value=player)
                             await msg.edit(embed=updated_embed)
-                            result = await Gambling.Blackjack().win(player, dealer)
 
-                            if result == True:
-                                await ctx.send("{0.mention} won {1}".format(ctx.author, bet * 2))
-
-                                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                                balance = await cursor.fetchone()
-                                await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (bet * 2, ctx.author.id))
-                                break
-
-                            else:
-                                await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
-
-                                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                                balance = await cursor.fetchone()
-                                await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
-                                break
-
-                    except asyncio.TimeoutError: 
+                            await ctx.send("{0.mention} lost ${1}".format(ctx.author, bet))
+                            await self.updateBalance(ctx.author, -bet)
+                            break
+                                
+                    else:
                         await msg.clear_reactions()
                         updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
                         updated_embed.add_field(name="Dealer", value=dealer)
                         updated_embed.add_field(name="You", value=player)
+                        await msg.edit(embed=updated_embed)
                         result = await Gambling.Blackjack().win(player, dealer)
 
                         if result == True:
-                            await ctx.send("{0.mention} won {1}".format(ctx.author, bet * 2))
-
-                            await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                            balance = await cursor.fetchone()
-                            await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (bet * 2, ctx.author.id))
+                            await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2))
+                            await self.updateBalance(ctx.author, bet * 2)
+                            break
 
                         else:
-                            await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
+                            await ctx.send("{0.mention} lost ${1}".format(ctx.author, bet))
+                            await self.updateBalance(ctx.author, -bet)
+                            break
 
-                            await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
-                            balance = await cursor.fetchone()
-                            await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
-                        
+                except asyncio.TimeoutError:
+                    console.print("[red]Timeout Error[/red]")
+                    await msg.clear_reactions()
+                    updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
+                    updated_embed.add_field(name="Dealer", value=dealer)
+                    updated_embed.add_field(name="You", value=player)
+                    await msg.edit(embed=updated_embed)
+                    result = await Gambling.Blackjack().win(player, dealer)
+
+                    if result == True:
+                        await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2))
+                        await self.updateBalance(ctx.author, bet * 2)
                         break
 
-            await db.commit()
+                    else:
+                        await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
+                        await self.updateBalance(ctx.author, -bet)
+                        break
 
 def setup(bot):
     bot.add_cog(Economy(bot))
