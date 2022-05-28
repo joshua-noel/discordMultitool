@@ -4,6 +4,7 @@ import random
 import discord
 from discord.ext import commands, tasks
 import aiosqlite
+import asyncio
 from rich.console import Console
 
 console = Console() #Rich console
@@ -41,7 +42,7 @@ class Gambling(commands.Cog):
                 card2 = "10"
 
             elif card2 == "A":
-                card2 = "11"
+                card2 = "1"
 
             return int(card1) + int(card2)
             
@@ -52,7 +53,7 @@ class Gambling(commands.Cog):
                 card = "10"
 
             elif card == "A":
-                card = "11"
+                card = "1"
 
             return int(card)
 
@@ -209,7 +210,7 @@ class Economy(commands.Cog):
                 while True:
                     try:
                         #checks for reaction
-                        react = await self.bot.wait_for('reaction_add', timeout=10.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
+                        react = await self.bot.wait_for('reaction_add', timeout=1.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
 
                         #hit
                         if str(react[0].emoji) == "✅":
@@ -236,7 +237,6 @@ class Economy(commands.Cog):
                                 await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
                                 break
                                 
-
                         else:
                             await msg.clear_reactions()
                             updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
@@ -261,8 +261,8 @@ class Economy(commands.Cog):
                                 await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
                                 break
 
-                    except TimeoutError: 
-                        msg.clear_reactions()
+                    except asyncio.TimeoutError: 
+                        await msg.clear_reactions()
                         updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
                         updated_embed.add_field(name="Dealer", value=dealer)
                         updated_embed.add_field(name="You", value=player)
