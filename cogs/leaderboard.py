@@ -10,11 +10,6 @@ console = Console() #Rich console
 class Leaderboard(commands.Cog):
     def __init__ (self, bot):
         self.bot = bot
-    
-    """
-    TODO:
-    - Top 10 by server
-    """
 
     @commands.command(name= "global", aliases= ["gb"])
     async def _global(self, ctx):
