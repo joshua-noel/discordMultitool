@@ -26,31 +26,45 @@ class Gambling(commands.Cog):
         def __init__(self):
             self.deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
             self.faceCards = ["J", "Q", "K"]
-            self.ace = "A"
 
         async def deal(self):
             card1 = random.choice(self.deck)
             card2 = random.choice(self.deck)
 
-            for card in [card1, card2]:
-                if card in self.faceCards:
-                    card = 10
+            if card1 in self.faceCards:
+                card1 = "10"
 
-                elif card == self.ace:
-                    card = 11
+            elif card1 == "A":
+                card1 = "11"
+            
+            if card2 in self.faceCards:
+                card2 = "10"
 
-            return card1, card2
+            elif card2 == "A":
+                card2 = "11"
+
+            return int(card1) + int(card2)
             
         async def hit(self):
             card = random.choice(self.deck)
 
             if card in self.faceCards:
-                card = 10
+                card = "10"
 
-            elif card == self.ace:
-                card = 11
+            elif card == "A":
+                card = "11"
 
-            return card
+            return int(card)
+
+        async def win(self, player, dealer):
+            if player > dealer and (player <= 21 and dealer <= 21):
+                return True
+
+            elif player == 21 and dealer != 21:
+                return True
+
+            else:
+                return False
 
 class PvP(commands.Cog):
     def __init__(self):
@@ -127,7 +141,7 @@ class Economy(commands.Cog):
             await db.commit()
 
     #Casino commands
-    @commands.command(name= "coinflip")
+    @commands.command(name= "coinflip", aliases= ["cf"])
     async def coinFlip(self, ctx, bet: int, guess: str):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:
@@ -183,7 +197,11 @@ class Economy(commands.Cog):
                     await ctx.send("You don't have enough money to play!")
 
                 else:
-                    embed = discord.Embed(title="Blackjack", color=0x00ff00)
+                    player = await Gambling.Blackjack().deal()
+                    dealer = await Gambling.Blackjack().deal()
+
+                    embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
+                    embed.add_field(name="Your Hand", value=player)
                     msg = await ctx.send(embed=embed)
                     await msg.add_reaction("✅")
                     await msg.add_reaction("❌")
@@ -193,18 +211,78 @@ class Economy(commands.Cog):
                         #checks for reaction
                         react = await self.bot.wait_for('reaction_add', timeout=10.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
 
+                        #hit
                         if str(react[0].emoji) == "✅":
-                            await msg.clear_reaction("✅")
+                            await msg.clear_reactions()
                             await msg.add_reaction("✅")
-
-                        else:
-                            await msg.clear_reaction("❌")
                             await msg.add_reaction("❌")
 
+                            player += await Gambling.Blackjack().hit()
+                            updated_embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
+                            updated_embed.add_field(name="Your Hand", value=player)
+                            await msg.edit(embed=updated_embed)
 
-                    except TimeoutError:
-                        await msg.remove_reaction("✅", ctx.author)
-                        await msg.remove_reaction("❌", ctx.author)
+                            if player > 21:
+                                await msg.clear_reactions()
+                                updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
+                                updated_embed.add_field(name="Dealer", value=dealer)
+                                updated_embed.add_field(name="You", value=player)
+                                await msg.edit(embed=updated_embed)
+
+                                await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
+
+                                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
+                                balance = await cursor.fetchone()
+                                await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
+                                break
+                                
+
+                        else:
+                            await msg.clear_reactions()
+                            updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
+                            updated_embed.add_field(name="Dealer", value=dealer)
+                            updated_embed.add_field(name="You", value=player)
+                            await msg.edit(embed=updated_embed)
+                            result = await Gambling.Blackjack().win(player, dealer)
+
+                            if result == True:
+                                await ctx.send("{0.mention} won {1}".format(ctx.author, bet * 2))
+
+                                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
+                                balance = await cursor.fetchone()
+                                await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (bet * 2, ctx.author.id))
+                                break
+
+                            else:
+                                await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
+
+                                await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
+                                balance = await cursor.fetchone()
+                                await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
+                                break
+
+                    except TimeoutError: 
+                        msg.clear_reactions()
+                        updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
+                        updated_embed.add_field(name="Dealer", value=dealer)
+                        updated_embed.add_field(name="You", value=player)
+                        result = await Gambling.Blackjack().win(player, dealer)
+
+                        if result == True:
+                            await ctx.send("{0.mention} won {1}".format(ctx.author, bet * 2))
+
+                            await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
+                            balance = await cursor.fetchone()
+                            await cursor.execute("UPDATE economy SET balance = balance + ? WHERE user_id = ?", (bet * 2, ctx.author.id))
+
+                        else:
+                            await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
+
+                            await cursor.execute("SELECT balance FROM economy WHERE user_id = ?", (ctx.author.id,))
+                            balance = await cursor.fetchone()
+                            await cursor.execute("UPDATE economy SET balance = balance - ? WHERE user_id = ?", (bet, ctx.author.id))
+                        
+                        break
 
             await db.commit()
 
