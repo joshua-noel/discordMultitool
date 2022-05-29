@@ -267,6 +267,9 @@ class Economy(commands.Cog):
                             break
 
                 except asyncio.TimeoutError:
+                    while dealer < 17:
+                        dealer += await Gambling.Blackjack().hit()
+
                     await msg.clear_reactions()
                     updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
                     updated_embed.add_field(name="Dealer", value=dealer)
