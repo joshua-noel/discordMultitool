@@ -111,6 +111,11 @@ class Economy(commands.Cog):
 
             await db.commit()
 
+    @commands.command(name= "bankrupt", aliases= ["bankruptcy", "poor", "broke"])
+    async def bankrupt(self, ctx):
+        await self.deleteAcc(ctx)
+        await self.createAcc(ctx)
+
     #Money handling
     async def updateBalance(self, user, amount):
         async with aiosqlite.connect('database.db') as db:
@@ -144,7 +149,7 @@ class Economy(commands.Cog):
 
             except TypeError:
                 await ctx.send("You do not have an account! I'll make one for you!")
-                await Economy.createAcc(self, ctx)
+                await self.createAcc(ctx)
 
             finally:
                 balance = await self.balance(ctx)
@@ -156,7 +161,7 @@ class Economy(commands.Cog):
 
             except TypeError:
                 await ctx.send("That user does not have an account! I'll make one for them!")
-                await Economy.createAcc(self, ctx, member)
+                await self.createAcc(ctx, member)
 
             finally:
                 balance = await self.balance(ctx, member)
