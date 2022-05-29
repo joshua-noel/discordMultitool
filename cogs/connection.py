@@ -33,7 +33,7 @@ class Connection(commands.Cog):
             console.log("[blue]Initial database connection established[/blue]")
             #database creation
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS economy (user_id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 500, server_id INTEGER)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS economy (user_id INTEGER PRIMARY KEY, server_id INTEGER, balance INTEGER DEFAULT 500)")
             
             await db.commit() #commit changes
 

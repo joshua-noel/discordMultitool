@@ -22,6 +22,7 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    """
     @commands.command(name= "download")
     async def download(self, ctx, url):
         await ctx.message.delete(delay= None) #deletes command message
@@ -38,6 +39,7 @@ class Utilities(commands.Cog):
             except discord.errors.HTTPException:
                 await ctx.send("Could not send video {0}".format(ctx.message.author.mention))
                 console.log("[red]Could not send video {0}[/red]".format(ctx.message.author.mention))
+    """
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

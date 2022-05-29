@@ -87,7 +87,7 @@ class Economy(commands.Cog):
                 account = await cursor.fetchone()
 
                 if account is None:
-                    await cursor.execute("INSERT INTO economy (user_id, balance, server_id) VALUES (?, ?, ?)", (ctx.author.id, 500, ctx.guild.id))
+                    await cursor.execute("INSERT INTO economy (user_id, balance, server_id) VALUES (?, ?, ?)", (ctx.author.id, ctx.guild.id, 500))
                     await ctx.send("Account created for {0.mention}!".format(ctx.author))
                     console.log("Account created for {0}!".format(ctx.author))
 
@@ -119,7 +119,7 @@ class Economy(commands.Cog):
                 balance = await cursor.fetchone()
 
                 if balance is not None:
-                    await cursor.execute("UPDATE economy SET balance = ? WHERE user_id = ?", (int(balance[0]) + int(amount), user.id))
+                    await cursor.execute("UPDATE economy SET balance = ? WHERE user_id = ?", (int(balance[1]) + int(amount), user.id))
                     await db.commit()
 
     async def balance(self, ctx, member: discord.Member = None):
@@ -134,7 +134,7 @@ class Economy(commands.Cog):
                     balance = await cursor.fetchone()
 
             await db.commit()
-            return int(balance[0])
+            return int(balance[1])
 
     @commands.command(name= "balance", aliases= ["bal"])
     async def _balance(self, ctx, member: discord.Member = None):

@@ -21,7 +21,7 @@ class Leaderboard(commands.Cog):
 
                 for i in range(len(leaderboard)):
                     user = self.bot.get_user(leaderboard[i][0]) #Gets user from user_id
-                    embed.add_field(name= f"{i+1}. {user.name}", value= f"${leaderboard[i][1]}", inline=False)
+                    embed.add_field(name= f"{i+1}. {user.name}", value= f"${leaderboard[i][2]}", inline=False)
 
                 await ctx.send(embed=embed)
             
@@ -37,7 +37,7 @@ class Leaderboard(commands.Cog):
                 
                 for i in range(len(leaderboard)):
                     user = self.bot.get_user(leaderboard[i][0])
-                    embed.add_field(name= f"{i+1}. {user.name}", value= f"${leaderboard[i][1]}", inline=False)
+                    embed.add_field(name= f"{i+1}. {user.name}", value= f"${leaderboard[i][2]}", inline=False)
 
                 await ctx.send(embed=embed)
 
