@@ -14,8 +14,11 @@ class Gambling(commands.Cog):
         pass
 
     async def coinFlip(self):
-        coin = ["heads", "tails"]
-        return coin[random.randint(0, 1)]
+        heads = ["heads", "head", "h"]
+        tails = ["tails", "tail", "t"]
+        face = random.choice(heads + tails)
+
+        return str(face)
 
     async def rollDice(self):
         die1 = random.randint(1, 6)
@@ -64,7 +67,7 @@ class Gambling(commands.Cog):
             if player < dealer and dealer > 21:
                 return True
 
-            elif player == 21 and dealer != 21:
+            if player == 21 and dealer != 21:
                 return True
 
             else:
@@ -182,9 +185,10 @@ class Economy(commands.Cog):
         balance = await self.balance(ctx, ctx.author)
 
         if balance >= bet:
-            result = await Gambling.coinFlip(self)
-            
-            if guess.lower() == result:
+            face = await Gambling.coinFlip(self)
+            guess = guess.lower()
+
+            if (guess in face):
                 await self.updateBalance(ctx.author, bet)
                 await ctx.send("{0.mention} won ${1}!".format(ctx.author, bet))
 
@@ -193,7 +197,7 @@ class Economy(commands.Cog):
                 await ctx.send("{0.mention} lost ${1}!".format(ctx.author, bet))
 
         else:
-            await ctx.send("You don't have enough money!")         
+            await ctx.send("You don't have enough money!")       
 
     @commands.command(name= "dice")
     async def rollDice(self, ctx):
@@ -260,6 +264,10 @@ class Economy(commands.Cog):
                         updated_embed.add_field(name="You", value=player)
                         await msg.edit(embed=updated_embed)
                         result = await Gambling.Blackjack().win(player, dealer)
+
+                        if player == dealer:
+                            await ctx.send("{0.mention} tied with the dealer! No money lost!".format(ctx.author))
+                            break
 
                         if result == True:
                             await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2))
