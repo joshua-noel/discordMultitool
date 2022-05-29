@@ -36,7 +36,7 @@ class Gambling(commands.Cog):
                 card1 = "10"
 
             elif card1 == "A":
-                card1 = "11"
+                card1 = "1"
             
             if card2 in self.faceCards:
                 card2 = "10"
