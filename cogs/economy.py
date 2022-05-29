@@ -58,7 +58,10 @@ class Gambling(commands.Cog):
             return int(card)
 
         async def win(self, player, dealer):
-            if player > dealer and (player <= 21 and dealer <= 21):
+            if player > dealer and player <= 21:
+                return True
+
+            if player < dealer and dealer > 21:
                 return True
 
             elif player == 21 and dealer != 21:
@@ -136,12 +139,28 @@ class Economy(commands.Cog):
     @commands.command(name= "balance", aliases= ["bal"])
     async def _balance(self, ctx, member: discord.Member = None):
         if member is None:
-            balance = await self.balance(ctx)
-            await ctx.send("{0.mention}'s balance is ${1}".format(ctx.author, balance))
+            try:
+                balance = await self.balance(ctx)
+
+            except TypeError:
+                await ctx.send("You do not have an account! I'll make one for you!")
+                await Economy.createAcc(self, ctx)
+
+            finally:
+                balance = await self.balance(ctx)
+                await ctx.send("{0.mention}'s balance is ${1}".format(ctx.author, balance))
 
         else:
-            balance = await self.balance(ctx, member)
-            await ctx.send("{0.mention}'s balance is ${1}".format(member, balance))
+            try:
+                balance = await self.balance(ctx, member)
+
+            except TypeError:
+                await ctx.send("That user does not have an account! I'll make one for them!")
+                await Economy.createAcc(self, ctx, member)
+
+            finally:
+                balance = await self.balance(ctx, member)
+                await ctx.send("{0.mention}'s balance is ${1}".format(member, balance))
 
     @commands.command(name= "pay", aliases= ["give"])
     async def pay(self, ctx, member: discord.Member, amount: int):
@@ -227,6 +246,9 @@ class Economy(commands.Cog):
                             break
                                 
                     else:
+                        while dealer < 17:
+                            dealer += await Gambling.Blackjack().hit()
+
                         await msg.clear_reactions()
                         updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
                         updated_embed.add_field(name="Dealer", value=dealer)
@@ -245,7 +267,6 @@ class Economy(commands.Cog):
                             break
 
                 except asyncio.TimeoutError:
-                    console.print("[red]Timeout Error[/red]")
                     await msg.clear_reactions()
                     updated_embed = discord.Embed(title="Blackjack", color=0x00ff00)
                     updated_embed.add_field(name="Dealer", value=dealer)
