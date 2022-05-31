@@ -43,4 +43,3 @@ class Utilities(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
-    console.log("[bright_cyan]Utilities Cog loaded...[/bright_cyan]")

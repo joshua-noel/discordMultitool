@@ -13,7 +13,6 @@ class Members(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         channel = member.guild.get_channel(978429063557431306)
-        console.log("[green]{0} has joined the server[/green]".format(member))
         if channel is not None:
             await channel.send("Welcome to the server {0.mention}".format(member))
 
@@ -23,7 +22,6 @@ class Members(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         channel = member.guild.get_channel(978429063557431306)
-        console.log("[red]{0} has left the server[/red]".format(member))
         if channel is not None:
             await channel.send("{0} has left the server".format(member))
 
@@ -36,4 +34,3 @@ class Members(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Members(bot))
-    console.log("[bright_cyan]Members Cog loaded...[/bright_cyan]")

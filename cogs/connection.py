@@ -40,4 +40,3 @@ class Connection(commands.Cog):
 #Cog setup
 def setup(bot):
     bot.add_cog(Connection(bot))
-    console.log("[bright_cyan]Connection Cog loaded...[/bright_cyan]")

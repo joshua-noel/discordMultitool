@@ -45,4 +45,3 @@ class Leaderboard(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Leaderboard(bot))
-    console.log("[bright_cyan]Leaderboard Cog loaded...[/bright_cyan]")

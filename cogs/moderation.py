@@ -13,35 +13,33 @@ class Moderation(commands.Cog):
     #Events
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
-        console.log("[purple]{0} has been banned[/purple]".format(member))
-        
         #exception handling
         try:
-            await member.send("You have been banned from the server!")
+            await member.send("You have been banned from {0}".format(guild.name))
 
         except discord.errors.Forbidden: #if user has DMs disabled
             pass
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):
-        console.log("[yellow]{0} has been unbanned[/yellow]".format(member))
-        
         #exception handling
         try:
-            await member.send("You have been unbanned from the server!")
+            await member.send("You have been unbanned from {0}".format(guild.name))
 
         except discord.errors.Forbidden: #if user has DMs disabled
             pass
 
     #Commands
     @commands.command(name= "ban")
-    @commands.has_permissions(ban_members= True)
+    @commands.has_permissions(ban_members=True)
+    #@commands.has_role("Admin")
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         await member.ban(reason=reason)
         await ctx.send("{0} has been banned!".format(member))
 
     @commands.command(name= "unban")
-    @commands.has_permissions(ban_members= True)
+    @commands.has_permissions(ban_members=True)
+    #@commands.has_role("Admin")
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split("#")
@@ -54,12 +52,19 @@ class Moderation(commands.Cog):
                 return
 
     @commands.command(name= "kick")
-    @commands.has_permissions(kick_members= True)
+    @commands.has_permissions(kick_members=True)
+    #@commands.has_any_role("Admin", "Moderator")
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         await member.kick(reason=reason)
         await ctx.send("{0} has been kicked!".format(member))
 
+    @commands.command(name= "warn")
+    @commands.has_permissions(kick_members=True)
+    #@commands.has_any_role("Admin", "Moderator")
+    async def warn(self, ctx, member: discord.Member, *, reason=None):
+        await member.send("You have been warned in {0} for {1}".format(ctx.guild.name, reason))
+        await ctx.send("{0} has been warned!".format(member))
+
 #Cog setup
 def setup(bot):
     bot.add_cog(Moderation(bot))
-    console.log("[bright_cyan]Moderation Cog loaded...[/bright_cyan]")

@@ -114,10 +114,15 @@ class Economy(commands.Cog):
 
             await db.commit()
 
-    @commands.command(name= "bankrupt", aliases= ["bankruptcy", "poor", "broke"])
-    async def bankrupt(self, ctx):
-        await self.deleteAcc(ctx)
-        await self.createAcc(ctx)
+    @commands.command(name= "beg")
+    async def beg(self, ctx):
+        if await self.balance(ctx) == 0:
+            coins = random.randint(100, 500)
+            await self.updateBalance(ctx.author, coins)
+            await ctx.send("{0.mention} begged for ${1}!".format(ctx.author, coins))
+
+        else:
+            await ctx.send("You can't beg when you have money!")
 
     #Money handling
     async def updateBalance(self, user, amount):
@@ -302,4 +307,3 @@ class Economy(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Economy(bot))
-    console.log("[bright_cyan]Economy Cog loaded...[/bright_cyan]")
