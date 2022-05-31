@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import discord
 from discord.ext import commands
+from rich.console import Console
 from dotenv import load_dotenv
 import os
 
 #Setup
+console = Console() #Rich console
 load_dotenv() #Loads the .env file
 
 intents = discord.Intents.all()
@@ -36,11 +38,13 @@ async def on_command_error(ctx, error):
 @commands.has_permissions(administrator= True)
 async def _load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
+    console.log("[bright_cyan]{extension} has been loaded[/bright_cyan]".format(extension))
 
 @bot.command(name= "unload")
 @commands.has_permissions(administrator= True)
 async def _unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
+    console.log("[bright_magenta]{extension} Cog unloaded...[/bright_magenta]".format(extension= extension.capitalize()))
 
 @bot.command(name= "reload")
 @commands.has_permissions(administrator= True)
@@ -54,11 +58,14 @@ async def _reloadall(ctx):
     for file in os.listdir('./cogs'):
         if file.endswith('.py'):
             bot.unload_extension(f'cogs.{file[:-3]}')
+            console.log("[bright_magenta]{extension} Cog unloaded...[/bright_magenta]".format(extension= file[:-3].capitalize()))
             bot.load_extension(f'cogs.{file[:-3]}')
+            console.log("[bright_cyan]{extension} Cog loaded...[/bright_cyan]".format(extension= file[:-3].capitalize()))
 
 #Load all cogs on startup
 for file in os.listdir('./cogs'):
     if file.endswith('.py'):
         bot.load_extension(f'cogs.{file[:-3]}')
+        console.log("[bright_cyan]{extension} Cog loaded...[/bright_cyan]".format(extension= file[:-3].capitalize()))
         
 bot.run(os.getenv('BOT_TOKEN')) #runs bot
