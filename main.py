@@ -12,7 +12,7 @@ load_dotenv() #Loads the .env file
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix= "&", intents=intents)
 
-# -----------------ERROR EMBEDS----------------------
+# -----------------ERROR EMBEDS---------------------
 doesntExist = discord.Embed(title= "⚠️ Error", description= "That command doesn't exist!", color=0xFFFF00)
 missingArguments = discord.Embed(title= "⚠️ Error", description= "You're missing some arguments!", color=0xFFFF00)
 missingPermission = discord.Embed(title= "⚠️ Error", description= "You don't have permission to use this command!", color=0xFFFF00)
