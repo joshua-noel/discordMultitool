@@ -1,17 +1,11 @@
-#General Commands#
-&commands
-&download <url>
+&download <url> DISABLED
 &createacc 
 &deleteacc
+&beg
+&balance
+&global
+&leaderboard
 &pay <user> <amt>
 &coinflip <bet> <guess>
 &dice
-
-#Admin Commands#
-&load <cog>
-&unload <cog>
-&reload <cog>
-&unloadall
-&ban <user>
-&unban <user>
-&kick <user>
+&blackjack <bet>
