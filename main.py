@@ -12,23 +12,29 @@ load_dotenv() #Loads the .env file
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix= "&", intents=intents)
 
+# -----------------ERROR EMBEDS---------------------
+doesntExist = discord.Embed(title= "⚠️ Error", description= "That command doesn't exist!", color=0xFFFF00)
+missingArguments = discord.Embed(title= "⚠️ Error", description= "You're missing some arguments!", color=0xFFFF00)
+missingPermission = discord.Embed(title= "⚠️ Error", description= "You don't have permission to use this command!", color=0xFFFF00)
+commandCooldown = discord.Embed(title= "⚠️ Error", description= "You're on cooldown!", color=0xFFFF00)
+
 #Bot wide error handling
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("That command doesn't exist!")
+        await ctx.send(embed=doesntExist)
 
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("You're missing a required argument!")
+        await ctx.send(embed=missingArguments)
 
     elif isinstance(error, commands.MissingPermissions):
-        await ctx.send("You don't have permission to do that!")
+        await ctx.send(embed=missingPermission)
 
     elif isinstance(error, commands.CheckFailure):
-        await ctx.send("You don't have permission to do that!")
+        await ctx.send(embed=missingPermission)
 
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.send("You're on cooldown!")
+        await ctx.send(embed=commandCooldown)
         
     else:
         raise error
@@ -38,7 +44,7 @@ async def on_command_error(ctx, error):
 @commands.has_permissions(administrator= True)
 async def _load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
-    console.log("[bright_cyan]{extension} has been loaded[/bright_cyan]".format(extension))
+    console.log("[bright_cyan]{extension} has been loaded[/bright_cyan]".format(extension= extension.capitalize()))
 
 @bot.command(name= "unload")
 @commands.has_permissions(administrator= True)
