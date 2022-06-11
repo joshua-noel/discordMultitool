@@ -9,6 +9,8 @@ from rich.console import Console
 
 console = Console() #Rich console
 
+#--------------------------Emdeds--------------------------#
+
 class Gambling(commands.Cog):
     def __init__(self):
         pass
@@ -72,6 +74,34 @@ class Gambling(commands.Cog):
 
             else:
                 return False
+
+    class Roulette():
+        def __init__(self):
+            self.wheel = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "00"]
+            self.bets = ["red", "black", "green", "even", "odd", "low", "high", "basket"]
+
+            self.betNumbers = {
+                "red": ["1", "3", "5", "7", "9", "12", "14", "16", "18", "19", "21", "23", "25", "27", "30", "32", "34", "36"],
+                "black": ["2", "4", "6", "8", "10", "11", "13", "15", "17", "20", "22", "24", "26", "28", "29", "31", "33", "35"],
+                "green": ["0", "00"],
+                "low": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"],
+                "high": ["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"],
+                "basket": ["0", "00", "1", "2", "3"]
+            }
+
+            self.payouts = {
+                "red": 2,
+                "black": 2,
+                "green": 35,
+                "even": 2,
+                "odd": 2,
+                "low": 2,
+                "high": 2,
+                "basket": 7
+            }
+
+        async def spin(self):
+            return random.choice(self.wheel)
 
 class PvP(commands.Cog):
     def __init__(self):
@@ -190,7 +220,7 @@ class Economy(commands.Cog):
         balance = await self.balance(ctx, ctx.author)
 
         if balance >= bet:
-            await self.updateBalance(ctx.authour, -bet)
+            await self.updateBalance(ctx.author, -bet)
             face = await Gambling.coinFlip(self)
             guess = guess.lower()
 
@@ -307,6 +337,34 @@ class Economy(commands.Cog):
                     else:
                         await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
                         break
+
+    @commands.command(name= "roulette")
+    async def roulette(self, ctx, bet: int, guess: str):
+        balance = await self.balance(ctx, ctx.author)
+
+        if balance < bet:
+            await ctx.send("You don't have enough money to play!")
+
+        else:
+            await self.updateBalance(ctx.author, -bet)
+            guess = guess.lower()
+
+            if guess in Gambling.Roulette().payouts:
+                payout = Gambling.Roulette().payouts[guess]
+            
+            else:
+                await ctx.send("You didn't enter a valid guess!")
+                return
+
+            roll = await Gambling.Roulette().spin()
+
+            if guess in Gambling.Roulette().betNumbers:
+                if roll in Gambling.Roulette().betNumbers[guess]:
+                    await self.updateBalance(ctx.author, bet * payout)
+                    await ctx.send("Wheel landed on {0}! {1.mention} won ${2}!".format(roll, ctx.author, bet * payout))
+
+                else:
+                    await ctx.send("Wheel landed on {0}! {1.mention} lost ${2}!".format(roll, ctx.author, bet))
 
 def setup(bot):
     bot.add_cog(Economy(bot))
