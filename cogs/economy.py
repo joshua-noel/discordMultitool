@@ -367,7 +367,7 @@ class Economy(commands.Cog):
                     await ctx.send("Wheel landed on {0}! {1.mention} lost ${2}!".format(roll, ctx.author, bet))
 
             elif guess == "even":
-                if roll % 2 == 0:
+                if int(roll) % 2 == 0:
                     await self.updateBalance(ctx.author, bet * payout)
                     await ctx.send("Wheel landed on {0}! {1.mention} won ${2}!".format(roll, ctx.author, bet * payout))
 
@@ -375,7 +375,7 @@ class Economy(commands.Cog):
                     await ctx.send("Wheel landed on {0}! {1.mention} lost ${2}!".format(roll, ctx.author, bet))
 
             elif guess == "odd":
-                if roll % 2 == 1:
+                if int(roll) % 2 == 1:
                     await self.updateBalance(ctx.author, bet * payout)
                     await ctx.send("Wheel landed on {0}! {1.mention} won ${2}!".format(roll, ctx.author, bet * payout))
 
