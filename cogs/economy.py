@@ -190,15 +190,15 @@ class Economy(commands.Cog):
         balance = await self.balance(ctx, ctx.author)
 
         if balance >= bet:
+            await self.updateBalance(ctx.authour, -bet)
             face = await Gambling.coinFlip(self)
             guess = guess.lower()
 
             if (guess in face):
-                await self.updateBalance(ctx.author, bet)
-                await ctx.send("{0.mention} won ${1}!".format(ctx.author, bet))
+                await self.updateBalance(ctx.author, bet * 2)
+                await ctx.send("{0.mention} won ${1}!".format(ctx.author, bet * 2))
 
             else:
-                await self.updateBalance(ctx.author, -bet)
                 await ctx.send("{0.mention} lost ${1}!".format(ctx.author, bet))
 
         else:
@@ -223,6 +223,7 @@ class Economy(commands.Cog):
             await ctx.send("You don't have enough money to play!")
 
         else:
+            await self.updateBalance(ctx.author, -bet)
             player = await Gambling.Blackjack().deal()
             dealer = await Gambling.Blackjack().deal()
 
@@ -254,9 +255,7 @@ class Economy(commands.Cog):
                             updated_embed.add_field(name="Dealer", value=dealer)
                             updated_embed.add_field(name="You", value=player)
                             await msg.edit(embed=updated_embed)
-
                             await ctx.send("{0.mention} lost ${1}".format(ctx.author, bet))
-                            await self.updateBalance(ctx.author, -bet)
                             break
                                 
                     else:
@@ -272,16 +271,16 @@ class Economy(commands.Cog):
 
                         if player == dealer:
                             await ctx.send("{0.mention} tied with the dealer! No money lost!".format(ctx.author))
+                            await self.updateBalance(ctx.author, bet)
                             break
 
                         if result == True:
-                            await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2))
-                            await self.updateBalance(ctx.author, bet * 2)
+                            await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2.5))
+                            await self.updateBalance(ctx.author, bet * 2.5)
                             break
 
                         else:
                             await ctx.send("{0.mention} lost ${1}".format(ctx.author, bet))
-                            await self.updateBalance(ctx.author, -bet)
                             break
 
                 except asyncio.TimeoutError:
@@ -295,14 +294,18 @@ class Economy(commands.Cog):
                     await msg.edit(embed=updated_embed)
                     result = await Gambling.Blackjack().win(player, dealer)
 
+                    if player == dealer:
+                        await ctx.send("{0.mention} tied with the dealer! No money lost!".format(ctx.author))
+                        await self.updateBalance(ctx.author, bet)
+                        break
+
                     if result == True:
-                        await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2))
-                        await self.updateBalance(ctx.author, bet * 2)
+                        await ctx.send("{0.mention} won ${1}".format(ctx.author, bet * 2.5))
+                        await self.updateBalance(ctx.author, bet * 2.5)
                         break
 
                     else:
                         await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
-                        await self.updateBalance(ctx.author, -bet)
                         break
 
 def setup(bot):
