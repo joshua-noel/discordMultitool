@@ -45,6 +45,9 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=commandCooldown)
         
     else:
+        uncaughtError = discord.Embed(title= "⚠️ Exception Occured", description= f"{error}", color=0xFF0000)
+        uncaughtError.set_footer(text= "Please report this to the developer!")
+        await ctx.send(embed=uncaughtError)
         raise error
 
 #Cog loading/Unloading
