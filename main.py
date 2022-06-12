@@ -2,6 +2,7 @@
 from turtle import pos
 import discord
 from discord.ext import commands
+from pretty_help import DefaultMenu, PrettyHelp
 from Levenshtein import distance
 from rich.console import Console
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ load_dotenv() #Loads the .env file
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix= "&", intents=intents)
+bot.help_command = PrettyHelp(menu= DefaultMenu(), no_category="Developer Commands")
 
 # -----------------ERROR EMBEDS---------------------
 doesntExist = discord.Embed(title= "⚠️ Error", description= "That command doesn't exist!", color=0xFFFF00)
@@ -42,7 +44,7 @@ async def on_command_error(ctx, error):
                 doesntExist.set_footer(text= "Did you mean: " + ", ".join(possibilities))
 
         if len(possibilities) == 0:
-            doesntExist.set_footer(text= "Type &commands to see all the commands!")
+            doesntExist.set_footer(text= "Type &help to see all the commands!")
         
         possibilities.clear()
         await ctx.send(embed=doesntExist)
