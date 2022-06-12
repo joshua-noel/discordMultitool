@@ -63,17 +63,9 @@ class Gambling(commands.Cog):
             return int(card)
 
         async def win(self, player, dealer):
-            if player > dealer and player <= 21:
-                return True
-
-            if player < dealer and dealer > 21:
-                return True
-
-            if player == 21 and dealer != 21:
-                return True
-
-            else:
-                return False
+            return (player > dealer and player < 21) or\
+                (player < dealer and dealer > 21) or\
+                (player == 21 and dealer != 21)
 
     class Roulette():
         def __init__(self):
@@ -86,7 +78,7 @@ class Gambling(commands.Cog):
                 "green": ["0", "00"],
                 "low": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"],
                 "high": ["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"],
-                "basket": ["0", "00", "1", "2", "3"]
+                "basket": ["0", "00", "1", "2", "3"],
             }
 
             self.payouts = {
