@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+from turtle import pos
 import discord
 from discord.ext import commands
+from Levenshtein import distance
 from rich.console import Console
 from dotenv import load_dotenv
 import os
@@ -11,10 +13,11 @@ load_dotenv() #Loads the .env file
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix= "&", intents=intents)
+possibleCommands = ["commands", "balance", "beg", "blackjack", "coinflip", "createacc", "deleteacc", "dice", "pay", "roulette", "global", "leaderboard"]
+possibilities = []
 
 # -----------------ERROR EMBEDS---------------------
 doesntExist = discord.Embed(title= "⚠️ Error", description= "That command doesn't exist!", color=0xFFFF00)
-doesntExist.set_footer(text= "Type &commands to see all the commands!")
 missingArguments = discord.Embed(title= "⚠️ Error", description= "You're missing some arguments!", color=0xFFFF00)
 missingPermission = discord.Embed(title= "⚠️ Error", description= "You don't have permission to use this command!", color=0xFFFF00)
 commandCooldown = discord.Embed(title= "⚠️ Error", description= "You're on cooldown!", color=0xFFFF00)
@@ -30,6 +33,15 @@ reloadAllCogs = discord.Embed(title= "✅ Success", description= "All cogs reloa
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
+        for command in possibleCommands:
+            if distance(command, ctx.message.content) <= 3:
+                possibilities.append(command)
+                doesntExist.set_footer(text= "Did you mean: " + ", ".join(possibilities))
+
+        if len(possibilities) == 0:
+            doesntExist.set_footer(text= "Type &commands to see all the commands!")
+        
+        possibilities.clear()
         await ctx.send(embed=doesntExist)
 
     elif isinstance(error, commands.MissingRequiredArgument):
@@ -45,7 +57,7 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=commandCooldown)
         
     else:
-        uncaughtError = discord.Embed(title= "⚠️ Exception Occured", description= f"{error}", color=0xFF0000)
+        uncaughtError = discord.Embed(title= "❌ Exception Occured", description= f"{error}", color=0xFF0000)
         uncaughtError.set_footer(text= "Please report this to the developer!")
         await ctx.send(embed=uncaughtError)
         raise error
