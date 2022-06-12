@@ -13,8 +13,6 @@ load_dotenv() #Loads the .env file
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix= "&", intents=intents)
-possibleCommands = ["commands", "balance", "beg", "blackjack", "coinflip", "createacc", "deleteacc", "dice", "pay", "roulette", "global", "leaderboard"]
-possibilities = []
 
 # -----------------ERROR EMBEDS---------------------
 doesntExist = discord.Embed(title= "⚠️ Error", description= "That command doesn't exist!", color=0xFFFF00)
@@ -32,7 +30,12 @@ reloadAllCogs = discord.Embed(title= "✅ Success", description= "All cogs reloa
 #Bot wide error handling
 @bot.event
 async def on_command_error(ctx, error):
+    possibilities = []
+
     if isinstance(error, commands.CommandNotFound):
+        # converts bot.commands items to string
+        possibleCommands = [str(i) for i in bot.commands]
+
         for command in possibleCommands:
             if distance(command, ctx.message.content) <= 3:
                 possibilities.append(command)
