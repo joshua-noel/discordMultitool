@@ -4,3 +4,4 @@ pytube == 12.1.0
 python-dotenv == 0.20.0
 aiosqlite == 0.17.0
 asyncio == 3.4.3
+python-Levenshtein == 58.1.0
