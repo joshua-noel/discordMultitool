@@ -11,7 +11,7 @@ class Leaderboard(commands.Cog):
     def __init__ (self, bot):
         self.bot = bot
 
-    @commands.command(name= "global", aliases= ["gb"])
+    @commands.command(name= "global", aliases= ["gb"], description= "Global Leaderboard", brief= "Global Leaderboard")
     async def _global(self, ctx):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:
@@ -27,7 +27,7 @@ class Leaderboard(commands.Cog):
             
             await db.commit()
 
-    @commands.command(name= "leaderboard", aliases= ["lb"])
+    @commands.command(name= "leaderboard", aliases= ["lb"], description= "Server Leaderboard", brief= "Server Leaderboard")
     async def leaderboard(self, ctx):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:

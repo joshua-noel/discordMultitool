@@ -104,7 +104,7 @@ class Economy(commands.Cog):
         self.bot = bot
 
     #Account management
-    @commands.command(name= "createacc")
+    @commands.command(name= "createacc", description= "Create an account for gambling", brief= "Create an account")
     async def createAcc(self, ctx):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:
@@ -122,7 +122,7 @@ class Economy(commands.Cog):
                 
             await db.commit()
 
-    @commands.command(name= "deleteacc")
+    @commands.command(name= "deleteacc", description= "Delete your account for gambling", brief= "Delete your account")
     async def deleteAcc(self, ctx):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:
@@ -136,7 +136,7 @@ class Economy(commands.Cog):
 
             await db.commit()
 
-    @commands.command(name= "beg")
+    @commands.command(name= "beg", description= "Beg for money", brief= "Beg for money")
     async def beg(self, ctx):
         async with aiosqlite.connect('database.db') as db:
             async with db.cursor() as cursor:
@@ -182,7 +182,7 @@ class Economy(commands.Cog):
             await db.commit()
             return int(balance[0])
 
-    @commands.command(name= "balance", aliases= ["bal"])
+    @commands.command(name= "balance", aliases= ["bal"], description= "Check your balance", brief= "Check your balance")
     async def _balance(self, ctx, member: discord.Member = None):
         if member is None:
             try:
@@ -208,7 +208,7 @@ class Economy(commands.Cog):
                 balance = await self.balance(ctx, member)
                 await ctx.send("{0.mention}'s balance is ${1}".format(member, balance))
 
-    @commands.command(name= "pay", aliases= ["give"])
+    @commands.command(name= "pay", aliases= ["give"], description= "Give someone money", brief= "You got cashapp?")
     async def pay(self, ctx, member: discord.Member, amount: int):
         balance = await self.balance(ctx, ctx.author)
 
@@ -221,7 +221,7 @@ class Economy(commands.Cog):
             await ctx.send("You don't have enough money!")
 
     #Casino commands
-    @commands.command(name= "coinflip", aliases= ["cf"])
+    @commands.command(name= "coinflip", aliases= ["cf"], description= "Flip a coin", brief= "Flip a coin")
     async def coinFlip(self, ctx, bet: int, guess: str):
         balance = await self.balance(ctx, ctx.author)
 
@@ -240,7 +240,7 @@ class Economy(commands.Cog):
         else:
             await ctx.send("You don't have enough money!")       
 
-    @commands.command(name= "dice")
+    @commands.command(name= "dice", description= "Roll the dice to win some money", brief= "Roll a 7 to win!")
     async def rollDice(self, ctx):
         roll = await Gambling.rollDice(self)
 
@@ -251,7 +251,7 @@ class Economy(commands.Cog):
         else:
             await ctx.send("You rolled a {0} you lose".format(roll))
 
-    @commands.command(name= "blackjack")
+    @commands.command(name= "blackjack", description= "Play some blackjack", brief= "Blackjack")
     async def blackJack(self, ctx, bet: int):
         balance = await self.balance(ctx, ctx.author)
 
@@ -344,7 +344,7 @@ class Economy(commands.Cog):
                         await ctx.send("{0.mention} lost {1}".format(ctx.author, bet))
                         break
 
-    @commands.command(name= "roulette")
+    @commands.command(name= "roulette", description= "Spin the roulette wheel", brief= "Roulette")
     async def roulette(self, ctx, bet: int, guess: str):
         balance = await self.balance(ctx, ctx.author)
 

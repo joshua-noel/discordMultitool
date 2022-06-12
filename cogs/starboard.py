@@ -21,7 +21,13 @@ class Starboard(commands.Cog):
 
             if reaction and reaction.count >= 4:
                 starboardEmbed = discord.Embed(title=f"{message.author}", description=f"{message.content}", color=random.choice(self.colors))
-                starboardEmbed.set_image(url=message.attachments[0].url)
+                
+                try:
+                    starboardEmbed.set_image(url=message.attachments[0].url)
+
+                except IndexError:
+                    pass
+
                 await self.starboard.send(embed=starboardEmbed)
 
 def setup(bot):
