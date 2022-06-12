@@ -138,6 +138,17 @@ class Economy(commands.Cog):
 
     @commands.command(name= "beg")
     async def beg(self, ctx):
+        async with aiosqlite.connect('database.db') as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT user_id FROM economy WHERE user_id = ?", (ctx.author.id,))
+                account = await cursor.fetchone()
+
+                if account is None:
+                    await cursor.execute("INSERT INTO economy (user_id, server_id, balance) VALUES (?, ?, ?)", (ctx.author.id, ctx.guild.id, 500))
+                    await ctx.send("Account created for {0.mention}!".format(ctx.author))
+                    console.log("Account created for {0}!".format(ctx.author))
+                    await db.commit()
+
         if await self.balance(ctx) == 0:
             coins = random.randint(100, 500)
             await self.updateBalance(ctx.author, coins)
@@ -201,17 +212,20 @@ class Economy(commands.Cog):
     async def pay(self, ctx, member: discord.Member, amount: int):
         balance = await self.balance(ctx, ctx.author)
 
-        if balance >= amount:
+        if balance >= amount and amount > 0:
             await self.updateBalance(ctx.author, -amount)
             await self.updateBalance(member, amount)
             await ctx.send("{0} has paid {1} ${2}".format(ctx.author, member, amount))
+
+        else:
+            await ctx.send("You don't have enough money!")
 
     #Casino commands
     @commands.command(name= "coinflip", aliases= ["cf"])
     async def coinFlip(self, ctx, bet: int, guess: str):
         balance = await self.balance(ctx, ctx.author)
 
-        if balance >= bet:
+        if balance >= bet and bet > 0:
             await self.updateBalance(ctx.author, -bet)
             face = await Gambling.coinFlip(self)
             guess = guess.lower()
@@ -241,7 +255,7 @@ class Economy(commands.Cog):
     async def blackJack(self, ctx, bet: int):
         balance = await self.balance(ctx, ctx.author)
 
-        if balance < bet:
+        if balance < bet or bet < 0:
             await ctx.send("You don't have enough money to play!")
 
         else:
@@ -334,7 +348,7 @@ class Economy(commands.Cog):
     async def roulette(self, ctx, bet: int, guess: str):
         balance = await self.balance(ctx, ctx.author)
 
-        if balance < bet:
+        if balance < bet or bet < 0:
             await ctx.send("You don't have enough money to play!")
 
         else:
