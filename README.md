@@ -4,6 +4,7 @@ This repository serves as a public backup of my discord bot project
 
 ## Features
 - Economy System
+- API Integration
 - Gambling System
 - Moderation System
 - Starboard
