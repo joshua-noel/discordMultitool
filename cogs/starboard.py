@@ -1,9 +1,11 @@
 import sys
+from turtle import st
 sys.dont_write_bytecode = True #Prevents creation of .pyc files
 import discord
 from discord.ext import commands
 from discord.utils import get
 import random
+from datetime import datetime
 
 class Starboard(commands.Cog):
     def __init__(self, bot):
@@ -20,7 +22,11 @@ class Starboard(commands.Cog):
             reaction = get(message.reactions, emoji=payload.emoji.name)
 
             if reaction and reaction.count >= 4:
-                starboardEmbed = discord.Embed(title=f"{message.author}", description=f"{message.content}", color=random.choice(self.colors))
+                starboardEmbed = discord.Embed(description= message.content, color=random.choice(self.colors))
+                starboardEmbed.set_author(name = message.author.name, icon_url = message.author.avatar_url)
+                starboardEmbed.add_field(name="Source", value=f"[Jump!]({message.jump_url})", inline=False)
+                starboardEmbed.set_footer(text=f"{message.id}")
+                starboardEmbed.timestamp = datetime.utcnow()
                 
                 try:
                     starboardEmbed.set_image(url=message.attachments[0].url)
