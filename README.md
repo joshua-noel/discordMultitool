@@ -6,6 +6,7 @@ This repository serves as a public backup of my discord bot project
 - Economy System
 - API Integration
 - Gambling System
+- Leveling System
 - Moderation System
 - Starboard
 - Custom Commands
