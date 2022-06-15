@@ -1,6 +1,8 @@
 /videos
 /__pycache__
+/cogs/__pycache__/*.pyc
 /cogs/copypastas.py
 database.db
+levels.db
 .env
 bot.bat
