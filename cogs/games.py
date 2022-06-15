@@ -16,14 +16,8 @@ class Connect4():
         def __init__(self, board):
             self.board = board
 
-        async def vertical(self, board, row, col, color):
-            pass
-
-        async def horizontal(self, board, row, col, color):
-            pass
-
-        async def diagonal(self, board, row, col, color):
-            pass
+        async def win(self, board, row, col, color):
+            return True #UNFINISHED
 
     async def printBoard(self, board, turn = None):
         if turn == "red":
@@ -50,7 +44,7 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="connect4", aliases=["c4"])
+    @commands.command(name="connect4")
     async def connect4(self, ctx, opponent: discord.Member):
         #initialize game
         board = Connect4().blankBoard #current board (2d list)
@@ -102,6 +96,10 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
+
                     elif str(react[0].emoji) == "2⃣":
                         row = 5
                         col = 1
@@ -130,6 +128,10 @@ class Games(commands.Cog):
                         game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
 
                     elif str(react[0].emoji) == "3⃣":
                         row = 5
@@ -160,6 +162,10 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
+
                     elif str(react[0].emoji) == "4⃣":
                         row = 5
                         col = 3
@@ -188,6 +194,10 @@ class Games(commands.Cog):
                         game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
 
                     elif str(react[0].emoji) == "5⃣":
                         row = 5
@@ -218,6 +228,10 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
+
                     elif str(react[0].emoji) == "6⃣":
                         row = 5
                         col = 5
@@ -246,6 +260,10 @@ class Games(commands.Cog):
                         game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
 
                     elif str(react[0].emoji) == "7⃣":
                         row = 5
@@ -276,6 +294,10 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                            winner = ctx.author
+                            break
+
                 except asyncio.TimeoutError:
                     turn = "blue"
                     await msg.clear_reactions()
@@ -288,25 +310,264 @@ class Games(commands.Cog):
                     game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
                     game.set_footer(text="Turn will yield after 20 seconds")
                     await msg.edit(embed=await Connect4.printBoard(self, board, turn))
-                    break #temp remove when workinf
-
+            
+            #blue turn
             elif turn == "blue":
-                turn = "red"
-                await msg.clear_reactions()
+                try:
+                    react = await self.bot.wait_for("reaction_add", timeout=20.0, check=lambda reaction, user: user == opponent and str(reaction.emoji) in Connect4().emotes)
 
-                for emote in Connect4().emotes:
-                    await msg.add_reaction(f"{emote}")
+                    if str(react[0].emoji) == "1⃣":
+                        row = 5
+                        col = 0
 
-                game = await Connect4.printBoard(self, board, turn)
-                game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
-                game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
-                game.set_footer(text="Turn will yield after 20 seconds")
-                await msg.edit(embed=game)
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
 
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                    elif str(react[0].emoji) == "2⃣":
+                        row = 5
+                        col = 1
+
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
+
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                    elif str(react[0].emoji) == "3⃣":
+                        row = 5
+                        col = 2
+
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
+
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                    elif str(react[0].emoji) == "4⃣":
+                        row = 5
+                        col = 3
+
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
+
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                    elif str(react[0].emoji) == "5⃣":
+                        row = 5
+                        col = 4
+
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
+
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                    elif str(react[0].emoji) == "6⃣":
+                        row = 5
+                        col = 5
+
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
+
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                    elif str(react[0].emoji) == "7⃣":
+                        row = 5
+                        col = 6
+
+                        while True:
+                            if board[row][col] == "⠀:white_circle:⠀":
+                                try:
+                                    board[row][col] = "⠀:blue_circle:⠀"
+
+                                except IndexError:
+                                    break
+
+                                break
+
+                            else:
+                                row -= 1
+
+                        turn = "red"
+                        await msg.clear_reactions()
+
+                        for emote in Connect4().emotes:
+                            await msg.add_reaction(f"{emote}")
+
+                        game = await Connect4.printBoard(self, board, turn)
+                        game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                        game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                        game.set_footer(text="Turn will yield after 20 seconds")
+                        await msg.edit(embed=game)
+
+                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                            winner = opponent
+                            break
+
+                except asyncio.TimeoutError:
+                    turn = "red"
+                    await msg.clear_reactions()
+
+                    for emote in Connect4().emotes:
+                        await msg.add_reaction(f"{emote}")
+
+                    game = await Connect4.printBoard(self, board, turn)
+                    game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
+                    game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
+                    game.set_footer(text="Turn will yield after 20 seconds")
+                    await msg.edit(embed=await Connect4.printBoard(self, board, turn))
+
+        #end of game
+        await msg.clear_reactions()
         game = await Connect4.printBoard(self, board)
         game.add_field(name="⠀:red_circle:", value=f"{ctx.author.name}") #adds red player
         game.add_field(name=":blue_circle:", value=f"{opponent.name}") #adds blue player
-        await ctx.send(f"{winner} wins!")
+        game.set_footer(text="Game Over")
+        await msg.edit(embed=game)
+        await ctx.send(f"{winner.mention} has won!")
 
 def setup(bot):
     bot.add_cog(Games(bot))
