@@ -16,8 +16,33 @@ class Connect4():
         def __init__(self, board):
             self.board = board
 
-        async def win(self, board, row, col, color):
-            return True #UNFINISHED
+        async def win(self, board, color):
+            rows = 6
+            cols = 7
+
+            # horizontal
+            for c in range(cols - 3):
+                for r in range(rows):
+                    if board[r][c] == color and board[r][c + 1] == color and board[r][c + 2] == color and board[r][c + 3] == color:
+                        return True
+
+            # vertical
+            for c in range(cols):
+                for r in range(rows - 3):
+                    if board[r][c] == color and board[r + 1][c] == color and board[r + 2][c] == color and board[r + 3][c] == color:
+                        return True
+
+            # positive diagonal
+            for c in range(cols - 3):
+                for r in range(rows - 3):
+                    if board[r][c] == color and board[r + 1][c + 1] == color and board[r + 2][c + 2] == color and board[r + 3][c + 3] == color:
+                        return True
+
+            # negative diagonal
+            for c in range(cols - 3):
+                for r in range(3, rows):
+                    if board[r][c] == color and board[r - 1][c + 1] == color and board[r - 2][c + 2] == color and board[r - 3][c + 3] == color:
+                        return True
 
     async def printBoard(self, board, turn = None):
         if turn == "red":
@@ -96,7 +121,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -129,7 +154,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -162,7 +187,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -195,7 +220,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -228,7 +253,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -261,7 +286,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -294,7 +319,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:red_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:red_circle:⠀"):
                             winner = ctx.author
                             break
 
@@ -345,7 +370,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
@@ -378,7 +403,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
@@ -411,7 +436,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
@@ -444,7 +469,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
@@ -477,7 +502,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
@@ -510,7 +535,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
@@ -543,7 +568,7 @@ class Games(commands.Cog):
                         game.set_footer(text="Turn will yield after 20 seconds")
                         await msg.edit(embed=game)
 
-                        if await Connect4().CheckWin(board).win(board, row, col, "⠀:blue_circle:⠀"):
+                        if await Connect4().CheckWin(board).win(board, "⠀:blue_circle:⠀"):
                             winner = opponent
                             break
 
