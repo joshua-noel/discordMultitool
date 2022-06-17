@@ -26,15 +26,23 @@ class Connection(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         console.log("[green]Logged in as {0.user}[/green]".format(self.bot))
-        await self.bot.change_presence(activity= discord.Game(name= "&commands")) #sets bot's status
+        await self.bot.change_presence(activity= discord.Game(name= "&help")) #sets bot's status
 
         #establish database connection
         async with aiosqlite.connect('database.db') as db:
-            console.log("[blue]Initial database connection established[/blue]")
+            console.log("[blue]Database connection established[/blue]")
             #database creation
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS economy (user_id INTEGER PRIMARY KEY, server_id INTEGER, balance INTEGER DEFAULT 500)")
             
+            await db.commit() #commit changes
+
+        async with aiosqlite.connect('levels.db') as db:
+            console.log("[blue]Levels database connection established[/blue]")
+            #database creation
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS levels (user_id INTEGER PRIMARY KEY, exp INTEGER, level INTEGER DEFAULT 1)")
+
             await db.commit() #commit changes
 
 #Cog setup
