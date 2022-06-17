@@ -2,16 +2,14 @@ import sys
 sys.dont_write_bytecode = True #Prevents creation of .pyc files
 import random
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import aiosqlite
 import asyncio
 from rich.console import Console
 
 console = Console() #Rich console
 
-#--------------------------Emdeds--------------------------#
-
-class Gambling(commands.Cog):
+class Gambling():
     def __init__(self):
         pass
 
@@ -94,10 +92,6 @@ class Gambling(commands.Cog):
 
         async def spin(self):
             return random.choice(self.wheel)
-
-class PvP(commands.Cog):
-    def __init__(self):
-        pass
 
 class Economy(commands.Cog):
     def __init__(self, bot):
@@ -265,6 +259,7 @@ class Economy(commands.Cog):
 
             embed = discord.Embed(title="Blackjack", description= "✅ To hit, ❌ to stand", color=0x00ff00)
             embed.add_field(name="Your Hand", value=player)
+            embed.set_footer(text= "Game will end after 30 seconds of inactivity")
             msg = await ctx.send(embed=embed)
             await msg.add_reaction("✅")
             await msg.add_reaction("❌")
@@ -272,7 +267,7 @@ class Economy(commands.Cog):
             while True:
                 try:
                     #checks for reaction
-                    react = await self.bot.wait_for('reaction_add', timeout=20.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
+                    react = await self.bot.wait_for('reaction_add', timeout=30.0, check=lambda reaction, user: user == ctx.author and str(reaction.emoji) in ["✅", "❌"])
 
                     #hit
                     if str(react[0].emoji) == "✅":
