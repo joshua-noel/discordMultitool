@@ -1,3 +1,4 @@
+from pydoc import describe
 import sys
 from webbrowser import get
 sys.dont_write_bytecode = True #Prevents creation of .pyc files
@@ -67,6 +68,35 @@ class APIs(commands.Cog):
 
                     else:
                         await ctx.send('An error occurred.')
+
+    @commands.command(name="capybara", aliases=['capy'])
+    async def capybara(self, ctx, query):
+        if query == 'image':
+            url = 'https://api.capybara-api.xyz/v1/image/random'
+
+            async with request('GET', url) as r:
+                if r.status == 200:
+                    data = await r.json()
+                    capyEmbed = discord.Embed(title='Capybara Image', color=0x966841)
+                    capyEmbed.set_image(url=data['image_urls']['original'])
+
+                    await ctx.send(embed=capyEmbed)
+                    
+                else:
+                    await ctx.send('An error occurred.')
+
+        elif query == 'fact':
+            url = 'https://api.capybara-api.xyz/v1/facts/random'
+
+            async with request('GET', url) as r:
+                if r.status == 200:
+                    data = await r.json()
+                    capyEmbed = discord.Embed(title='Capybara Fact', description= data['fact'], color=0x966841)
+
+                    await ctx.send(embed=capyEmbed)
+                    
+                else:
+                    await ctx.send('An error occurred.')
 
 def setup(bot):
     bot.add_cog(APIs(bot))
