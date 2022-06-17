@@ -1,5 +1,3 @@
-from calendar import c
-from socket import timeout
 import sys
 sys.dont_write_bytecode = True #Prevents creation of .pyc files
 import random
@@ -70,7 +68,31 @@ class Games(commands.Cog):
         self.bot = bot
 
     @commands.command(name="connect4")
-    async def connect4(self, ctx, opponent: discord.Member):
+    async def connect4(self, ctx, opponent: discord.Member, wager: int = 0):
+        confirmEmbed = discord.Embed(title="Connect 4", description=f"{ctx.author.name} has challenged {opponent.name} to connect 4 for ${wager}", color=0xFAFAFA)
+        confirmEmbed.set_footer(text=f"{opponent.name} has 15 seconds to accept or decline the challenge")
+        confirmMsg = await ctx.send(embed=confirmEmbed)
+        await confirmMsg.add_reaction("✅")
+        await confirmMsg.add_reaction("❌")
+
+        while True:
+            try:
+                react = await self.bot.wait_for("reaction_add", timeout=15.0, check=lambda reaction, user: user == opponent and str(reaction.emoji) in ["✅", "❌"])
+
+                if str(react[0].emoji) == "✅":
+                    await confirmMsg.delete()
+                    break
+
+                elif str(react[0].emoji) == "❌":
+                    await ctx.send(f"{opponent.name} has declined the challenge.")
+                    await confirmMsg.delete()
+                    return
+
+            except asyncio.TimeoutError:
+                await confirmMsg.delete()
+                await ctx.send("Your opponent has not responded to the challenge.")
+                return
+
         #initialize game
         board = Connect4().blankBoard #current board (2d list)
         turn = random.choice(["red", "blue"]) #randomly choose who goes first
