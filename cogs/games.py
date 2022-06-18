@@ -6,8 +6,7 @@ import discord
 from discord.ext import commands
 import asyncio
 from cogs.economy import Economy
-
-#TODO add elo system for connect4
+from cogs.elo import Elo
 
 class Connect4():
     def __init__(self):
@@ -635,11 +634,14 @@ class Games(commands.Cog):
         await msg.edit(embed=game)
         await ctx.send(f"{winner.mention} has won!")
 
+        #elo is calculated using the challenger as player A
         if winner == ctx.author:
             await Economy(self).updateBalance(ctx.author, wager * 2)
+            await Elo(self).updateStats(ctx.author, opponent, 1)
 
         elif winner == opponent:
             await Economy(self).updateBalance(opponent, wager * 2)
+            await Elo(self).updateStats(ctx.author, opponent, 0)
 
 def setup(bot):
     bot.add_cog(Games(bot))
