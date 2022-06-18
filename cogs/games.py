@@ -641,7 +641,7 @@ class Games(commands.Cog):
 
         elif winner == opponent:
             await Economy(self).updateBalance(opponent, wager * 2)
-            await Elo(self).updateStats(ctx.author, opponent, 0)
+            await Elo(self).updateStats(ctx.author, opponent, 1)
 
 def setup(bot):
     bot.add_cog(Games(bot))
