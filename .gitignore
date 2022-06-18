@@ -4,5 +4,6 @@
 /cogs/copypastas.py
 database.db
 levels.db
+elo.db
 .env
 bot.bat
