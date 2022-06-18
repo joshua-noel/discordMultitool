@@ -37,9 +37,9 @@ class Elo(commands.Cog):
         eloA = await self.getElo(personA)
         eloB = await self.getElo(personB)
 
-        expectedA = await self.computeElo.winProb(eloA, eloB)
+        expectedA = await EloComputations(self).winProb(eloA, eloB)
 
-        eloA = await self.computeElo.computeElo(eloA, expectedA, outcome)
+        eloA = await EloComputations(self).computeElo(eloA, expectedA, outcome)
         
         async with aiosqlite.connect('elo.db') as db:
             await db.execute("UPDATE elo SET elo = ? WHERE user_id = ?", (eloA, personA.id))
