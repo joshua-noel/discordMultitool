@@ -1,9 +1,13 @@
 import sys
 sys.dont_write_bytecode = True #Prevents creation of .pyc files
+sys.path.append('./cogs')
 import random
 import discord
 from discord.ext import commands
 import asyncio
+from cogs.economy import Economy
+
+#TODO add elo system for connect4
 
 class Connect4():
     def __init__(self):
@@ -69,6 +73,21 @@ class Games(commands.Cog):
 
     @commands.command(name="connect4")
     async def connect4(self, ctx, opponent: discord.Member, wager: int = 0):
+        if opponent == ctx.author or opponent == self.bot.user:
+            await ctx.send("You can't challenge yourself!")
+            return
+
+        challengerBal = await Economy(self).balance(ctx, ctx.author)
+        opponentBal = await Economy(self).balance(ctx, opponent)
+
+        if wager > challengerBal or wager > opponentBal or wager < 0:
+            await ctx.send("Somone can't afford that wager")
+            return
+
+        else:
+            await Economy(self).updateBalance(ctx.author, -wager)
+            await Economy(self).updateBalance(opponent, -wager)
+
         confirmEmbed = discord.Embed(title="Connect 4", description=f"{ctx.author.name} has challenged {opponent.name} to connect 4 for ${wager}", color=0xFAFAFA)
         confirmEmbed.set_footer(text=f"{opponent.name} has 15 seconds to accept or decline the challenge")
         confirmMsg = await ctx.send(embed=confirmEmbed)
@@ -90,7 +109,7 @@ class Games(commands.Cog):
 
             except asyncio.TimeoutError:
                 await confirmMsg.delete()
-                await ctx.send("Your opponent has not responded to the challenge.")
+                await ctx.send(f"{opponent.name} did not respond to the challenge")
                 return
 
         #initialize game
@@ -615,6 +634,12 @@ class Games(commands.Cog):
         game.set_footer(text="Game Over")
         await msg.edit(embed=game)
         await ctx.send(f"{winner.mention} has won!")
+
+        if winner == ctx.author:
+            await Economy(self).updateBalance(ctx.author, wager * 2)
+
+        elif winner == opponent:
+            await Economy(self).updateBalance(opponent, wager * 2)
 
 def setup(bot):
     bot.add_cog(Games(bot))
