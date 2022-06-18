@@ -22,12 +22,12 @@ missingArguments = discord.Embed(title= "⚠️ Error", description= "You're mis
 missingPermission = discord.Embed(title= "⚠️ Error", description= "You don't have permission to use this command!", color=0xFFFF00)
 commandCooldown = discord.Embed(title= "⚠️ Error", description= "You're on cooldown!", color=0xFFFF00)
 
-# -----------------COG EMBEDS---------------------
+# -----------------COG EMBEDS----------------------
 cogNotFound = discord.Embed(title= "⚠️ Error", description= "That cog doesn't exist!", color=0xFFFF00)
-loadCog = discord.Embed(title= "✅ Success", description= "Cog loaded!", color=0x00FFD8)
-unloadCog = discord.Embed(title= "✅ Success", description= "Cog unloaded!", color=0xA233FF)
-reloadCog = discord.Embed(title= "✅ Success", description= "Cog reloaded!", color=0x00FFD8)
-reloadAllCogs = discord.Embed(title= "✅ Success", description= "All cogs reloaded!", color=0x00FFD8)
+loadCog = discord.Embed(title= "✅ Success", description= "Cog loaded!", color=0x00FF00)
+unloadCog = discord.Embed(title= "✅ Success", description= "Cog unloaded!", color=0x00FF00)
+reloadCog = discord.Embed(title= "✅ Success", description= "Cog reloaded!", color=0x00FF00)
+reloadAllCogs = discord.Embed(title= "✅ Success", description= "All cogs reloaded!", color=0x00FF00)
 
 #Bot wide error handling
 @bot.event
@@ -60,6 +60,15 @@ async def on_command_error(ctx, error):
 
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.send(embed=commandCooldown)
+
+    elif isinstance(error, commands.ExtensionNotFound):
+        await ctx.send(embed=cogNotFound)
+
+    elif isinstance(error, commands.ExtensionAlreadyLoaded):
+        await ctx.send(embed=loadCog)
+
+    elif isinstance(error, commands.ExtensionNotLoaded):
+        await ctx.send(embed=unloadCog)
         
     else:
         uncaughtError = discord.Embed(title= "❌ Exception Occured", description= f"{error}", color=0xFF0000)
