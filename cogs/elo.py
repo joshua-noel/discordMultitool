@@ -89,10 +89,11 @@ class Elo(commands.Cog):
 
         eloA = await self.getElo(memberA)
         eloB = await self.getElo(memberB)
+        winProb = await EloComputations(self).winProb(eloA, eloB)
 
         compareEmbed = discord.Embed(title = f"{memberB.name} vs {memberA.name}", color = discord.Color.blue())
-        compareEmbed.add_field(name = "Elo", value = f"{eloA} vs {eloB}")
-        compareEmbed.add_field(name = "Win Probability", value = f"{await EloComputations(self).winProb(eloA, eloB)}")
+        compareEmbed.add_field(name = "Elo", value = f"{eloB} vs {eloA}")
+        compareEmbed.add_field(name = "Win Probability", value = f"{round(winProb, 2) * 100}%")
         await ctx.send(embed = compareEmbed)
 
     @commands.command()
