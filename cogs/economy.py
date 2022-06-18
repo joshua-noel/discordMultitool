@@ -355,6 +355,7 @@ class Economy(commands.Cog):
             
             else:
                 await ctx.send("You didn't enter a valid guess!")
+                await self.updateBalance(ctx.author, bet)
                 return
 
             roll = await Gambling.Roulette().spin()
