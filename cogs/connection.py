@@ -30,7 +30,7 @@ class Connection(commands.Cog):
 
         #establish database connection
         async with aiosqlite.connect('database.db') as db:
-            console.log("[blue]Database connection established[/blue]")
+            console.log("[blue]Economy database connection established[/blue]")
             #database creation
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS economy (user_id INTEGER PRIMARY KEY, server_id INTEGER, balance INTEGER DEFAULT 500)")
@@ -44,6 +44,14 @@ class Connection(commands.Cog):
                 await cursor.execute("CREATE TABLE IF NOT EXISTS levels (user_id INTEGER PRIMARY KEY, exp INTEGER, level INTEGER DEFAULT 1)")
 
             await db.commit() #commit changes
+
+        async with aiosqlite.connect('elo.db') as db:
+            console.log("[blue]Elo database connection established[/blue]")
+            #database creation
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS elo (user_id INTEGER PRIMARY KEY, elo INTEGER DEFAULT 1000, wins INTEGER DEFAULT 0, losses INTEGER DEFAULT 0)")
+
+            await db.commit()
 
 #Cog setup
 def setup(bot):
